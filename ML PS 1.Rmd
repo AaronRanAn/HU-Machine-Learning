@@ -1,0 +1,153 @@
+---
+title: "HU ML Problem Set 1"
+author: "Aaron"
+date: "September 20, 2016"
+output:
+  pdf_document: default
+  html_document:
+    highlight: haddock
+    theme: cosmo
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(magrittr)
+library(car)
+library(knitr)
+```
+
+### Homework 1
+
+> Complete the following problems from the Kelleher book (Chapter 3) 5, 8, 10
+
+### Problem 5
+
+The table below shows the scores achieved by a group of students on an exam.
+
+```{r}
+
+data_frame(id = 1:20, score = c(42, 47, 59, 27, 84, 49, 72, 43, 73, 59, 
+                                58, 82, 50, 79, 89, 75, 70, 59, 67, 35)) -> df
+           
+head(df)
+
+```
+
+Using this data, perform the following tasks on the SCORE feature:
+
+1. A **range normalization** that generates data in the range (0, 1)
+
+```{r}
+
+range_normalization = function(x, high, low) {
+    
+    ((x - min(x)) / (max(x) - min(x))) * (high - low) + low
+    
+}
+
+# ranged normalized score to (0,1)
+
+df %$% range_normalization(score, 1, 0)
+
+```
+
+
+2. A **range normalization** that generates data in the range (− 1, 1)
+
+```{r}
+
+# ranged normalized score to (0,1)
+
+df %$% range_normalization(score, 1, -1)
+
+```
+
+
+3. A **standardization** of the data
+
+```{r}
+
+# using built-in function like a classy cat
+
+df %>% 
+    mutate(std_score = round(scale(score), 2)) %>% 
+    select(std_score) %>% as_vector()
+
+```
+
+
+### Problem 8
+
+The table below shows socio-economic data for a selection of countries for the year 2009, using the following features: 
+
+- COUNTRY: The name of the country 
+- LIFEEXPECTANCY: The average life expectancy (in years) 
+- INFANTMORTALITY: The infant mortality rate (per 1,000 live births) 
+- EDUCATION: Spending per primary student as a percentage of GDP 
+- HEALTH: Health spending as a percentage of GDP 
+- HEALTHUSD: Health spending per person converted into US dollars
+
+```{r}
+
+country = read_csv("../data/country.csv")
+
+str(country)
+
+```
+
+1. Calculate the correlation between the LIFEEXPECTANCY and INFANT-MORTALITY features. 
+
+```{r}
+
+country %$% 
+    cor(life_expectancy, infant_mortality)
+
+```
+
+2. The image below shows a scatter plot matrix of the continuous features from this dataset (the correlation between LIFEEXPECTANCY and INFANTMORTALITY has been omitted). Discuss the relationships between the features in the dataset that this scatter plot highlights.
+
+```{r, fig.height=7, fig.width=7}
+
+country[,2:6] %>% 
+    scatterplotMatrix()
+
+```
+
+
+- Life Expectancy and Infant Mortality are negatively correlated, the relationship is almost linear. 
+- After Life Expectancy exceeds 65, it is positively correlated with Health (and Health USD)
+- Infant Mortality is negatively correlated with Health (and Health USD) before 40. 
+
+
+#### Problem 10
+
+The following data visualizations are based on the tachycardia prediction dataset from Question 9 (after the instances with missing TACHYCARDIA values have been removed and all outliers have been handled). Each visualization illustrates the relationship between a descriptive feature and the target feature, TACHYCARDIA and is composed of three plots: a plot of the distribution of the descriptive feature values in the full dataset, and plots showing the distribution of the descriptive feature values for each level of the target. Discuss the relationships shown in each visualizations. 
+
+1. The visualization below illustrates the relationship between the continuous feature DIA. B.P. and the target feature, TACHYCARDIA.
+
+![](../img/image_1.png)
+
+The false target variable is more correlated with DIA B.P at range of 60 to 90. 
+
+The true target variable is more correlated with DIA B.P at range of 100 to 160. 
+
+
+2. The visualization below illustrates the relationship between the continuous HEIGHT feature and the target feature TACHYCARDIA.
+
+![](../img/image_2.png)
+
+Target variable is equally distributed in the full range of height, expect that the false target variable is more represented in height range above 190. 
+
+3. The visualization below illustrates the relationship between the categorical feature PREV. TACHY. and the target feature, TACHYCARDIA.
+
+![](../img/image_3.png)
+
+The target variable is strongly correlated with true Prev Tachy variable. 
+
+
+
