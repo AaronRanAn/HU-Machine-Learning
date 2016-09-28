@@ -3,7 +3,8 @@ title: "HU ML Problem Set 1"
 author: "Aaron"
 date: "September 20, 2016"
 output:
-  pdf_document: default
+  pdf_document: 
+    latex_engine: xelatex
   html_document:
     highlight: haddock
     theme: cosmo
